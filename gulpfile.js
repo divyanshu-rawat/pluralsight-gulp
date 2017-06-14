@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var args = require('yargs').argv;
 var config = require('./gulp.config')();
 var $ = require('gulp-load-plugins')({lazy:true});
-
+var del = require('del');
 //Gulp-plugins
 // var jshint = require('gulp-jshint');
 // var jscs = require('gulp-jscs');
@@ -28,6 +28,37 @@ gulp.task('vet',function () {
 
 });
 
-function log(msg) {
+gulp.task('styles',['clean-styles'],function () {
+	log('Compiling LESS ---> CSS');
+
+	return gulp
+	.src(config.less)
+	.pipe($.plumber())
+	.pipe($.less())
+	.pipe($.autoprefixer())
+	.pipe(gulp.dest(config.temp));
+});
+
+gulp.task('clean-styles',function (done) {
+ 	var files = config.temp + '**/*.css';
+ 	clean(files,done);
+});
+
+
+gulp.task('less-watcher',function () {
+	gulp.watch([config.less],['styles']);
+})
+
+
+function clean(path,done) {
+	log('Cleaning' + path);
+	del(path);
+	done();
+}
+
+function
+ log(msg) {
 	$.util.log($.util.colors.blue(msg));
 }
+
+
